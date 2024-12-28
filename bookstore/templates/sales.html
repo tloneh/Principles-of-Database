@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>购买管理</h2>
+
+    {% if success %}
+        <div class="alert success">{{ success }}</div>
+    {% elif error %}
+        <div class="alert">{{ error }}</div>
+    {% endif %}
+
+    <form action="/sales" method="POST">
+        <label for="book_id">书籍ID:</label>
+        <select id="book_id" name="book_id" required>
+            <option value="">请选择书籍</option>
+            {% for book in books %}
+                <option value="{{ book.book_id }}">{{ book.title }} ({{ book.book_id }})</option>
+            {% endfor %}
+        </select><br>
+
+        <label for="quantity">购买数量:</label>
+        <input type="number" id="quantity" name="quantity" required><br>
+
+        <label for="sale_price">销售价格:</label>
+        <input type="number" id="sale_price" name="sale_price" step="0.01" readonly required><br>
+
+        <label for="sale_date">销售日期:</label>
+        <input type="date" id="sale_date" name="sale_date" required><br>
+
+        <label for="customer_id">顾客ID:</label>
+        <input type="number" id="customer_id" name="customer_id" required><br>
+
+        <button type="submit">提交</button>
+    </form>
+</div>
+
+<script>
+    // 当选择书籍ID时，发起请求获取书籍价格
+    document.getElementById('book_id').addEventListener('change', function() {
+        var bookId = this.value;
+        if (bookId) {
+            fetch(`/get_book_price/${bookId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.price) {
+                        document.getElementById('sale_price').value = data.price;
+                    } else {
+                        alert("未找到书籍价格");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('无法获取书籍价格');
+                });
+        } else {
+            document.getElementById('sale_price').value = '';
+        }
+    });
+</script>
+{% endblock %}

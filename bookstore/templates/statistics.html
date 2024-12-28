@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>销售统计</h2>
+
+<form action="/statistics" method="GET">
+    <label for="month">选择统计月份:</label>
+    <input type="month" id="month" name="month" required><br>
+    <button type="submit">查看统计</button>
+</form>
+
+{% if statistics %}
+    <h3>统计结果</h3>
+    <p><strong>销售总额:</strong> ¥{{ statistics[0] }}</p>
+    <p><strong>销售总量:</strong> {{ statistics[1] }} 本</p>
+    <p><strong>畅销书排行:</strong> {{ statistics[2] }}</p>
+{% else %}
+    <p>没有统计结果，可能是由于该月份没有销售或退货记录。</p>
+{% endif %}
+{% endblock %}
